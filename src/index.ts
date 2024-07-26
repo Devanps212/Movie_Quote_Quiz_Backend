@@ -1,11 +1,11 @@
-import express, { NextFunction, Request, Response } from 'express'
+import express, { NextFunction } from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import morgan from 'morgan'
-import path from 'path'
 import bodyparser from 'body-parser'
 import helmet from 'helmet'
 import mongoConnect from './frameWorks/database/mongoDB/connection'
+import mainRoute from './frameWorks/webServer/routes/router'
 
 dotenv.config()
 
@@ -21,6 +21,7 @@ const corsOptions = {
 const app = express()
 const port  = process.env.PORT || 3000
 
+app.use(express.json())
 app.use(cors(corsOptions))
 app.use(bodyparser.urlencoded({extended:true}))
 app.use(bodyparser.json({limit: '10mb'}))
@@ -35,9 +36,7 @@ app.use((req, res, next:NextFunction)=>{
 })
 mongoConnect()
 
-app.get('/', (req: Request, res: Response)=>{
-    res.send("hello")
-})
+app.use('/', mainRoute())
 
 app.listen(port, ()=>{
     console.log(`connected to PORT ${port}`)
